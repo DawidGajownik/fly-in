@@ -10,8 +10,11 @@ class Hub:
         self.y = int(y)
         self.color = None
         self.max_drones = 1
-        self.zone = 'standard'
+        self.zone = 'normal'
         self.process_extras(extras) if extras else None
+        self.block = None
+        self.drones_amount = 0
+        self.connections = []
 
     def process_extras(self, extras):
         extras = extras.removeprefix("[").removesuffix("]")
