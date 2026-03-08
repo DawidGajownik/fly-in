@@ -79,10 +79,30 @@ def draw_circles_in_square(surface, x, y, size, count, color, drones, drones_her
                 surface.blit(text, text_r)
             drawn += 1
 
+def loop_checker(hub, checked_hubs):
+    if any(hub.hub_type == "end_hub" for hub in checked_hubs):
+        return
+
+    checked_hubs.append(hub)
+    for connection in hub.connections:
+        if connection.end not in checked_hubs:
+            loop_checker(connection.end, checked_hubs)
+        else:
+            # for conn in connection.end.connections:
+            #     print('check', conn)
+            #     if conn.end in checked_hubs:
+            #         print('kurde', conn)
+            #         connection.active = True
+            #         return
+            # for hub in checked_hubs:
+            #     print(hub)
+            # if not any(hub.hub_type == "end_hub" for hub in checked_hubs):
+            #     return
+            print('deactivate', connection)
+            connection.deactivate()
+
 def main():
     hubs, connections, drones = handle_file(sys.argv[1])
-    #for drone in drones:
-    #    print(drone)
     pygame.init()
     width = pygame.display.Info().current_w
     height = pygame.display.Info().current_h
@@ -105,6 +125,10 @@ def main():
     pygame.display.set_caption("Fly-in")
     font = pygame.font.Font(None, 15)
     blocks = []
+    checked_hubs = []
+    loop_checker(hubs[0], checked_hubs)
+    # for hub in checked_hubs:
+    #     print('checked', hub)
     still_removing = True
     while still_removing:
         still_removing = False
@@ -112,14 +136,15 @@ def main():
             if hub.hub_type != "end_hub":
                 has_end = False
                 for connection in hub.connections:
-                    if connection.start == hub:
+                    if connection.start == hub and connection.active:
                         has_end = True
                 if not has_end:
                     for connection in connections:
-                        if connection.end == hub:
-                            if connection in connection.start.connections:
-                                connection.start.connections.remove(connection)
-                            connections.remove(connection)
+                        if connection.end == hub and connection.active:
+                            connection.deactivate()
+                            #if connection in connection.start.connections:
+                                #connection.start.connections.remove(connection)
+                            #connections.remove(connection)
                             still_removing = True
     for y in range(y_min, y_max + 1):
         blocks_line = []
@@ -135,6 +160,7 @@ def main():
     #     for block in line:
     #         print(block)
     clock = pygame.time.Clock()
+    the_colors = pygame.color.THECOLORS
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -150,12 +176,19 @@ def main():
             start_y_offset = scale//len(start_hubs) * start_idx
             end_y_divider = 2 * len(end_hubs)
             end_y_offset = scale//len(end_hubs) * end_idx
+            # if connection.active:
             if connection.end.zone == 'priority' and connection.start.zone != 'restricted' and connection.end.zone != 'restricted':
-                pygame.draw.line(screen, pygame.Color("pink"), ((connection.start.x - x_min) * scale + scale//2, (connection.start.y - y_min) * scale + scale//start_y_divider + start_y_offset), ((connection.end.x - x_min) * scale + scale//2, (connection.end.y - y_min) * scale + scale//end_y_divider + end_y_offset), 3)
+                pygame.draw.line(screen, pygame.Color("pink"), ((connection.start.x - x_min) * scale + scale//2, (connection.start.y - y_min) * scale + scale//start_y_divider + start_y_offset), ((connection.end.x - x_min) * scale + scale//2, (connection.end.y - y_min) * scale + scale//end_y_divider + end_y_offset), 10 if connection.active else 1)
             elif connection.start.zone != 'restricted' and connection.end.zone != 'restricted':
-                pygame.draw.line(screen, pygame.Color("black"), ((connection.start.x - x_min) * scale + scale//2, (connection.start.y - y_min) * scale + scale//start_y_divider + start_y_offset), ((connection.end.x - x_min) * scale + scale//2, (connection.end.y - y_min) * scale + scale//end_y_divider + end_y_offset), 3)
+                pygame.draw.line(screen, pygame.Color("black"), ((connection.start.x - x_min) * scale + scale//2, (connection.start.y - y_min) * scale + scale//start_y_divider + start_y_offset), ((connection.end.x - x_min) * scale + scale//2, (connection.end.y - y_min) * scale + scale//end_y_divider + end_y_offset), 10 if connection.active else 1)
             else:
-                pygame.draw.line(screen, pygame.Color("red"), ((connection.start.x - x_min) * scale + scale//2, (connection.start.y - y_min) * scale + scale//start_y_divider + start_y_offset), ((connection.end.x - x_min) * scale + scale//2, (connection.end.y - y_min) * scale + scale//end_y_divider + end_y_offset), 3)
+                pygame.draw.line(screen, pygame.Color("red"), ((connection.start.x - x_min) * scale + scale//2, (connection.start.y - y_min) * scale + scale//start_y_divider + start_y_offset), ((connection.end.x - x_min) * scale + scale//2, (connection.end.y - y_min) * scale + scale//end_y_divider + end_y_offset), 10 if connection.active else 1)
+            # else:
+            #     pygame.draw.line(screen, pygame.Color("gray"), ((connection.start.x - x_min) * scale + scale // 2, (
+            #                 connection.start.y - y_min) * scale + scale // start_y_divider + start_y_offset),
+            #                      ((connection.end.x - x_min) * scale + scale // 2,
+            #                       (connection.end.y - y_min) * scale + scale // end_y_divider + end_y_offset), 3)
+
         for line in blocks:
             for block in line:
                 if len(block.hubs) > 0:
@@ -182,12 +215,14 @@ def main():
                                 screen, pygame.Color(block.hubs[i].color),
                                 (square_x + 2, square_y + 2, square_size - 8, (square_size - 8)//len(block.hubs)))
                         except ValueError:
+                            block.hubs[i].color = "pink"
                             pygame.draw.rect(
-                                screen, pygame.Color("pink"),
+                                screen, pygame.Color(block.hubs[i].color),
                                 (square_x + 2, square_y + 2, square_size - 8, (square_size - 8)//len(block.hubs)))
                         draw_circles_in_square(screen, square_x + 2, square_y + 2, square_size - 8, block.hubs[i].max_drones, (255, 255, 255), len(drones), drones_here)
                         text_1 = font.render(block.hubs[i].name, True, (0, 0, 0))
-                        text_2 = font.render(block.hubs[i].name, True, (0, 0, 0))
+                        brightness = sum(the_colors[block.hubs[i].color][:3])
+                        text_2 = font.render(block.hubs[i].name, True, (0, 0, 0) if brightness >= (255*3)//2 else (255,255,255))
                         text_3 = font.render("Max drones: " + str(block.hubs[i].max_drones), True, (0, 0, 0))
                         text_1_r = text_1.get_rect(
                             center=(scale * (block.hubs[i].x - x_min) + scale//2,
