@@ -36,10 +36,6 @@ def handle_file(filename):
                             start.connections.append(connection)
                         else:
                             return None
-                # for hub in hubs:
-                #     print(hub)
-                # for connection in connections:
-                #     print(connection)
         else:
             print("Too many arguments\nUsage: python fly_in.py <filename>")
     except IndexError:
@@ -57,16 +53,15 @@ def draw_circles_in_square(surface, x, y, size, count, color, drones, drones_her
     if count <= 0:
         return
 
-    grid = math.ceil(math.sqrt(drones))  # liczba kolumn/wierszy
-    cell = size / grid                  # rozmiar jednej komórki
-    radius = int(cell * 0.4)            # promień kółka
+    grid = math.ceil(math.sqrt(drones))
+    cell = size / grid
+    radius = int(cell * 0.4)
 
     drawn = 0
     for row in range(grid):
         for col in range(grid):
             if drawn >= count:
                 return
-
             cx = x + col * cell + cell/2
             cy = y + row * cell + cell/2
             pygame.draw.circle(surface, pygame.Color("black"), (int(cx), int(cy)), radius+1)
@@ -82,23 +77,11 @@ def draw_circles_in_square(surface, x, y, size, count, color, drones, drones_her
 def loop_checker(hub, checked_hubs):
     if any(hub.hub_type == "end_hub" for hub in checked_hubs):
         return
-
     checked_hubs.append(hub)
     for connection in hub.connections:
-        if connection.end not in checked_hubs:
-            loop_checker(connection.end, checked_hubs)
+        if connection.start == hub and connection.end not in checked_hubs and connection.active:
+            loop_checker(connection.end, copy(checked_hubs))
         else:
-            # for conn in connection.end.connections:
-            #     print('check', conn)
-            #     if conn.end in checked_hubs:
-            #         print('kurde', conn)
-            #         connection.active = True
-            #         return
-            # for hub in checked_hubs:
-            #     print(hub)
-            # if not any(hub.hub_type == "end_hub" for hub in checked_hubs):
-            #     return
-            print('deactivate', connection)
             connection.deactivate()
 
 def main():

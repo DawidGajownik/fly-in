@@ -1,0 +1,299 @@
+# CHALLENGER LEVEL: BEYOND IMPOSSIBLE
+# WARNING: This map is designed to be EVEN MORE EXTREME than the previous one.
+# It is intentionally pathological, with layered traps, cycles, fake shortcuts,
+# and brutal capacity constraints. It is not meant to be "fair".
+
+nb_drones: 40
+
+# === LAYER 0: The Funnel of Despair ===
+start_hub: start 0 0 [color=green max_drones=40]
+
+# Multi-stage single-file funnel with cross-links to create congestion feedback
+hub: gate_hell1 1 0 [color=red max_drones=1]
+hub: gate_hell2 2 0 [color=red max_drones=1]
+hub: gate_hell3 3 0 [color=red max_drones=1]
+hub: gate_hell4 4 0 [color=red max_drones=1]
+hub: gate_hell5 5 0 [color=red max_drones=1]
+hub: gate_hell6 6 0 [color=red max_drones=1]
+hub: gate_hell7 7 0 [color=red max_drones=1]
+
+# Side detours that look like relief but are traps
+hub: side_trap_l1 2 1 [color=purple]
+hub: side_trap_l2 3 1 [color=purple]
+hub: side_trap_l3 4 1 [color=purple]
+hub: side_dead_l 5 1 [color=black]
+
+hub: side_trap_r1 2 -1 [color=purple]
+hub: side_trap_r2 3 -1 [color=purple]
+hub: side_trap_r3 4 -1 [color=purple]
+hub: side_dead_r 5 -1 [color=black]
+
+# === LAYER 1: Fractal Maze of Suffering ===
+hub: maze_a1 1 2 [color=purple]
+hub: maze_a2 2 2 [color=purple]
+hub: maze_a3 3 2 [color=purple]
+hub: maze_a4 4 2 [color=purple]
+hub: maze_a_dead 5 2 [color=black]
+
+hub: maze_b1 1 -2 [color=purple]
+hub: maze_b2 2 -2 [color=purple]
+hub: maze_b3 3 -2 [color=purple]
+hub: maze_b4 4 -2 [color=purple]
+hub: maze_b_dead 5 -2 [color=black]
+
+# Nested loop cluster (hard to escape)
+hub: loop_core1 3 3 [zone=restricted color=brown]
+hub: loop_core2 4 3 [zone=restricted color=brown]
+hub: loop_core3 5 3 [zone=restricted color=brown]
+hub: loop_core4 5 4 [zone=restricted color=brown]
+hub: loop_core5 4 4 [zone=restricted color=brown]
+hub: loop_core6 3 4 [zone=restricted color=brown]
+
+# Lower nested loop cluster
+hub: loop_lower1 3 -3 [zone=restricted color=brown]
+hub: loop_lower2 4 -3 [zone=restricted color=brown]
+hub: loop_lower3 5 -3 [zone=restricted color=brown]
+hub: loop_lower4 5 -4 [zone=restricted color=brown]
+hub: loop_lower5 4 -4 [zone=restricted color=brown]
+hub: loop_lower6 3 -4 [zone=restricted color=brown]
+
+# === LAYER 2: Micro Gates & Overflow Abyss ===
+hub: micro_gate1 8 0 [color=orange max_drones=1]
+hub: micro_gate2 9 0 [color=orange max_drones=1]
+hub: micro_gate3 10 0 [color=orange max_drones=1]
+hub: micro_gate4 11 0 [color=orange max_drones=1]
+
+# Overflow zones with tiny capacities and many cross-links
+hub: overflow_hell1 8 1 [zone=restricted color=maroon max_drones=2]
+hub: overflow_hell2 9 1 [zone=restricted color=maroon max_drones=2]
+hub: overflow_hell3 10 1 [zone=restricted color=maroon max_drones=2]
+hub: overflow_hell4 11 1 [zone=restricted color=maroon max_drones=2]
+
+hub: overflow_hell5 8 -1 [zone=restricted color=maroon max_drones=2]
+hub: overflow_hell6 9 -1 [zone=restricted color=maroon max_drones=2]
+hub: overflow_hell7 10 -1 [zone=restricted color=maroon max_drones=2]
+hub: overflow_hell8 11 -1 [zone=restricted color=maroon max_drones=2]
+
+# Deep overflow traps
+hub: overflow_pit1 9 2 [zone=restricted color=darkred max_drones=1]
+hub: overflow_pit2 10 2 [zone=restricted color=darkred max_drones=1]
+hub: overflow_pit3 9 -2 [zone=restricted color=darkred max_drones=1]
+hub: overflow_pit4 10 -2 [zone=restricted color=darkred max_drones=1]
+
+# === LAYER 3: False Hope 2.0 ===
+hub: false_hope1 12 0 [zone=priority color=gold max_drones=3]
+hub: false_hope2 13 0 [zone=priority color=gold max_drones=2]
+hub: false_hope3 14 0 [zone=priority color=gold max_drones=1]
+hub: false_hope4 15 0 [zone=priority color=gold max_drones=1]
+
+# Attractive but deadly branches
+hub: prio_trap_u1 12 1 [zone=priority color=gold]
+hub: prio_trap_u2 13 1 [zone=priority color=gold]
+hub: prio_trap_u3 14 1 [zone=priority color=gold]
+hub: prio_dead_u 15 1 [color=black]
+
+hub: prio_trap_d1 12 -1 [zone=priority color=gold]
+hub: prio_trap_d2 13 -1 [zone=priority color=gold]
+hub: prio_trap_d3 14 -1 [zone=priority color=gold]
+hub: prio_dead_d 15 -1 [color=black]
+
+# === LAYER 4: Triple Convergence Hell ===
+hub: conv_top1 16 2 [zone=restricted color=darkred max_drones=1]
+hub: conv_top2 17 2 [zone=restricted color=darkred max_drones=1]
+hub: conv_top3 18 2 [zone=restricted color=darkred max_drones=1]
+
+hub: conv_mid1 16 0 [zone=restricted color=darkred max_drones=1]
+hub: conv_mid2 17 0 [zone=restricted color=darkred max_drones=1]
+hub: conv_mid3 18 0 [zone=restricted color=darkred max_drones=1]
+
+hub: conv_low1 16 -2 [zone=restricted color=darkred max_drones=1]
+hub: conv_low2 17 -2 [zone=restricted color=darkred max_drones=1]
+hub: conv_low3 18 -2 [zone=restricted color=darkred max_drones=1]
+
+# Extra misleading convergence ring
+hub: conv_ring1 17 3 [zone=restricted color=darkred max_drones=1]
+hub: conv_ring2 18 3 [zone=restricted color=darkred max_drones=1]
+hub: conv_ring3 19 3 [zone=restricted color=darkred max_drones=1]
+hub: conv_ring4 19 2 [zone=restricted color=darkred max_drones=1]
+
+# === LAYER 5: Final Gauntlet++ ===
+hub: final_merge 20 0 [color=violet max_drones=4]
+hub: final_split1 21 1 [color=crimson max_drones=1]
+hub: final_split2 21 -1 [color=crimson max_drones=1]
+
+hub: final_torture1 22 0 [color=crimson max_drones=2]
+hub: final_torture2 23 0 [color=crimson max_drones=1]
+hub: final_torture3 24 0 [color=crimson max_drones=1]
+hub: final_torture4 25 0 [color=crimson max_drones=1]
+hub: final_torture5 26 0 [color=crimson max_drones=1]
+
+# Fake alternative end that is a dead end
+hub: fake_goal 24 1 [color=black]
+
+# The ultimate goal
+end_hub: beyond_impossible_goal 27 0 [color=rainbow max_drones=40]
+
+# === CONNECTIONS: Entangled Misery ===
+
+# Layer 0 funnel
+connection: start-gate_hell1 [max_link_capacity=1]
+connection: gate_hell1-gate_hell2 [max_link_capacity=1]
+connection: gate_hell2-gate_hell3 [max_link_capacity=1]
+connection: gate_hell3-gate_hell4 [max_link_capacity=1]
+connection: gate_hell4-gate_hell5 [max_link_capacity=1]
+connection: gate_hell5-gate_hell6 [max_link_capacity=1]
+connection: gate_hell6-gate_hell7 [max_link_capacity=1]
+
+# Cross-links to side traps
+connection: gate_hell2-side_trap_l1
+connection: side_trap_l1-side_trap_l2
+connection: side_trap_l2-side_trap_l3
+connection: side_trap_l3-side_dead_l
+
+connection: gate_hell3-side_trap_r1
+connection: side_trap_r1-side_trap_r2
+connection: side_trap_r2-side_trap_r3
+connection: side_trap_r3-side_dead_r
+
+# Feedback edges to increase congestion
+connection: side_trap_l2-gate_hell1
+connection: side_trap_r2-gate_hell1
+
+# Layer 1 maze connections
+connection: gate_hell1-maze_a1
+connection: gate_hell2-maze_b1
+connection: gate_hell4-maze_a2
+connection: gate_hell5-maze_b2
+
+connection: maze_a1-maze_a2
+connection: maze_a2-maze_a3
+connection: maze_a3-maze_a4
+connection: maze_a4-maze_a_dead
+
+connection: maze_b1-maze_b2
+connection: maze_b2-maze_b3
+connection: maze_b3-maze_b4
+connection: maze_b4-maze_b_dead
+
+# Nested loop clusters (upper)
+connection: maze_a3-loop_core1
+connection: loop_core1-loop_core2
+connection: loop_core2-loop_core3
+connection: loop_core3-loop_core4
+connection: loop_core4-loop_core5
+connection: loop_core5-loop_core6
+connection: loop_core6-loop_core1
+
+# Nested loop clusters (lower)
+connection: maze_b3-loop_lower1
+connection: loop_lower1-loop_lower2
+connection: loop_lower2-loop_lower3
+connection: loop_lower3-loop_lower4
+connection: loop_lower4-loop_lower5
+connection: loop_lower5-loop_lower6
+connection: loop_lower6-loop_lower1
+
+# Rare escape edges from loops
+connection: loop_core2-micro_gate1
+connection: loop_lower2-micro_gate1
+
+# Layer 2 micro gates & overflow
+connection: gate_hell7-micro_gate1
+connection: micro_gate1-micro_gate2
+connection: micro_gate2-micro_gate3
+connection: micro_gate3-micro_gate4
+
+# Overflow connections (dense mesh)
+connection: micro_gate1-overflow_hell1
+connection: micro_gate2-overflow_hell2
+connection: micro_gate3-overflow_hell3
+connection: micro_gate4-overflow_hell4
+
+connection: micro_gate1-overflow_hell5
+connection: micro_gate2-overflow_hell6
+connection: micro_gate3-overflow_hell7
+connection: micro_gate4-overflow_hell8
+
+connection: overflow_hell1-overflow_hell2
+connection: overflow_hell2-overflow_hell3
+connection: overflow_hell3-overflow_hell4
+connection: overflow_hell5-overflow_hell6
+connection: overflow_hell6-overflow_hell7
+connection: overflow_hell7-overflow_hell8
+
+connection: overflow_hell2-overflow_pit1
+connection: overflow_hell3-overflow_pit2
+connection: overflow_hell6-overflow_pit3
+connection: overflow_hell7-overflow_pit4
+
+# Limited exits from overflow to false hope
+connection: overflow_hell4-false_hope1
+connection: overflow_hell8-false_hope1
+connection: micro_gate4-false_hope1
+
+# Layer 3 false hope connections
+connection: false_hope1-false_hope2
+connection: false_hope2-false_hope3
+connection: false_hope3-false_hope4
+
+# False hope traps
+connection: false_hope1-prio_trap_u1
+connection: false_hope2-prio_trap_u2
+connection: false_hope3-prio_trap_u3
+connection: false_hope4-prio_dead_u
+
+connection: false_hope1-prio_trap_d1
+connection: false_hope2-prio_trap_d2
+connection: false_hope3-prio_trap_d3
+connection: false_hope4-prio_dead_d
+
+connection: prio_trap_u1-prio_trap_u2
+connection: prio_trap_u2-prio_trap_u3
+connection: prio_trap_d1-prio_trap_d2
+connection: prio_trap_d2-prio_trap_d3
+
+# Layer 4 triple convergence
+connection: false_hope4-conv_top1
+connection: false_hope4-conv_mid1
+connection: false_hope4-conv_low1
+
+connection: conv_top1-conv_top2
+connection: conv_top2-conv_top3
+connection: conv_mid1-conv_mid2
+connection: conv_mid2-conv_mid3
+connection: conv_low1-conv_low2
+connection: conv_low2-conv_low3
+
+# Convergence ring (misleading)
+connection: conv_top3-conv_ring1
+connection: conv_ring1-conv_ring2
+connection: conv_ring2-conv_ring3
+connection: conv_ring3-conv_ring4
+connection: conv_ring4-conv_top2
+
+# Final convergence into final_merge
+connection: conv_top3-final_merge
+connection: conv_mid3-final_merge
+connection: conv_low3-final_merge
+
+# Layer 5 final gauntlet++
+connection: final_merge-final_split1
+connection: final_merge-final_split2
+
+connection: final_split1-final_torture1
+connection: final_split2-final_torture1
+
+connection: final_torture1-final_torture2
+connection: final_torture2-final_torture3
+connection: final_torture3-final_torture4
+connection: final_torture4-final_torture5
+connection: final_torture5-beyond_impossible_goal
+
+# Fake goal branch
+connection: final_torture3-fake_goal
+
+# Emergency ultra-expensive bypasses
+connection: overflow_pit1-conv_mid1
+connection: overflow_pit4-conv_low1
+connection: prio_trap_u1-conv_top1
+connection: prio_trap_d3-conv_low3
