@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List, Any
 
 class Hub:
     def __init__(
@@ -8,15 +8,15 @@ class Hub:
         self.hub_type = hub_type[:-1]
         self.x = int(x)
         self.y = int(y)
-        self.color = None
+        self.color = ""
         self.max_drones = 1
         self.zone = 'normal'
         self.process_extras(extras) if extras else None
         self.block = None
         self.drones_amount = 0
-        self.connections = []
+        self.connections: List[Any] = []
 
-    def process_extras(self, extras):
+    def process_extras(self, extras: str) -> None:
         extras = extras.removeprefix("[").removesuffix("]")
         lines = extras.split()
         for line in lines:
@@ -27,7 +27,10 @@ class Hub:
             elif line.split("=")[0] == "zone":
                 self.zone = line.split("=")[1]
             else:
-                raise ValueError
+                raise ValueError("Wrong format")
 
-    def __str__(self):
-        return f"{self.__class__.__name__}: name = {self.name}: type = {self.hub_type}: x = {self.x}, y = {self.y}, color = {self.color}, max_drones = {self.max_drones}, zone = {self.zone}"
+    def __str__(self) -> str:
+        return (f"{self.__class__.__name__}:"
+                f" name = {self.name}: type = {self.hub_type}:"
+                f" x = {self.x}, y = {self.y}, color = {self.color},"
+                f" max_drones = {self.max_drones}, zone = {self.zone}")

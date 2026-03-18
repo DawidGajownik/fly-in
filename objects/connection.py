@@ -1,8 +1,11 @@
 from .hub import Hub
 from typing import Optional
 
+
 class Connection:
-    def __init__(self, start: Hub, end: Hub, extras: Optional[str] = None) -> None:
+    def __init__(
+            self, start: Hub, end: Hub,
+            extras: Optional[str] = None) -> None:
         self.start = start
         self.end = end
         self.drones_amount = 0
@@ -12,7 +15,7 @@ class Connection:
         self.active = True
         self.process_extras(extras) if extras else None
 
-    def process_extras(self, extras):
+    def process_extras(self, extras: str) -> None:
         extras = extras.removeprefix("[").removesuffix("]")
         lines = extras.split()
         for line in lines:
@@ -21,17 +24,19 @@ class Connection:
             else:
                 raise ValueError
 
-    def trip(self):
+    def trip(self) -> None:
         self.trips += 1
 
-    def trips_reset(self):
+    def trips_reset(self) -> None:
         self.trips = 0
 
     def can_go(self) -> bool:
         return self.trips < self.max_trips
 
-    def deactivate(self):
+    def deactivate(self) -> None:
         self.active = False
 
     def __str__(self) -> str:
-        return f"{self.__class__.__name__}: {self.start.name} - {self.end.name}, capacity = {self.max_trips}"
+        return (f"{self.__class__.__name__}:"
+                f" {self.start.name} - {self.end.name},"
+                f" capacity = {self.max_trips}")
