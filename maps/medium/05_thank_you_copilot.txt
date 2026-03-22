@@ -1,0 +1,44 @@
+nb_drones: 10
+
+start_hub: start 0 0 [color=green max_drones=4]
+
+hub: r1 1 -1 [zone=restricted color=red max_drones=2]
+hub: r2 2 -2 [zone=restricted color=red max_drones=2]
+hub: r3 3 -3 [zone=restricted color=red max_drones=2]
+
+hub: p1 1 1 [zone=priority color=blue max_drones=3]
+hub: p2 2 2 [zone=priority color=blue max_drones=2]
+hub: p3 3 3 [zone=priority color=blue max_drones=2]
+
+hub: mid_left 2 -1 [color=yellow max_drones=3]
+hub: mid_right 2 1 [color=yellow max_drones=3]
+
+hub: merge_low 3 -1 [color=yellow max_drones=3]
+hub: merge_high 3 1 [color=yellow max_drones=3]
+
+hub: final_merge 4 0 [color=yellow max_drones=4]
+
+end_hub: goal 5 0 [color=green max_drones=4]
+
+# Connections (all with explicit capacities)
+
+connection: start-r1 [max_link_capacity=3]
+connection: r1-r2 [max_link_capacity=2]
+connection: r2-r3 [max_link_capacity=2]
+connection: r3-merge_low [max_link_capacity=2]
+
+connection: start-p1 [max_link_capacity=4]
+connection: p1-p2 [max_link_capacity=3]
+connection: p2-p3 [max_link_capacity=2]
+connection: p3-merge_high [max_link_capacity=2]
+
+connection: start-mid_left [max_link_capacity=3]
+connection: start-mid_right [max_link_capacity=3]
+
+connection: mid_left-merge_low [max_link_capacity=2]
+connection: mid_right-merge_high [max_link_capacity=2]
+
+connection: merge_low-final_merge [max_link_capacity=3]
+connection: merge_high-final_merge [max_link_capacity=3]
+
+connection: final_merge-goal [max_link_capacity=4]

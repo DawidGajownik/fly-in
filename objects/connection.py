@@ -14,12 +14,15 @@ class Connection:
         self.trips = 0
         self.active = True
         self.process_extras(extras) if extras else None
+        if self.end.max_drones < self.max_drones:
+            self.max_drones = self.end.max_drones
 
     def process_extras(self, extras: str) -> None:
         extras = extras.removeprefix("[").removesuffix("]")
         lines = extras.split()
         for line in lines:
             if line.split("=")[0] == "max_link_capacity":
+                self.max_drones = int(line.split("=")[1])
                 self.max_trips = int(line.split("=")[1])
             else:
                 raise ValueError

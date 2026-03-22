@@ -1,0 +1,103 @@
+nb_drones: 36
+
+start_hub: start 0 0 [color=green max_drones=5]
+
+# --- LEWA STRONA (chaotyczna, restricted + side loops) ---
+
+hub: L1 1 -2 [zone=restricted color=red max_drones=2]
+hub: L2 2 -3 [zone=restricted color=red max_drones=2]
+hub: L3 3 -4 [zone=restricted color=red max_drones=2]
+
+hub: L_alt1 2 -2 [color=yellow max_drones=2]
+hub: L_alt2 3 -2 [color=yellow max_drones=2]
+
+hub: L_loop1 1 -3 [color=yellow max_drones=2]
+hub: L_loop2 2 -4 [color=yellow max_drones=2]
+
+# --- ŚRODEK (główna magistrala, stabilna, ale długa) ---
+
+hub: C1 1 0 [color=yellow max_drones=4]
+hub: C2 2 0 [color=yellow max_drones=4]
+hub: C3 3 0 [color=yellow max_drones=4]
+hub: C4 4 0 [color=yellow max_drones=4]
+
+# --- PRAWA STRONA (priority, szybka, ale wąska) ---
+
+hub: P1 1 2 [zone=priority color=blue max_drones=3]
+hub: P2 2 3 [zone=priority color=blue max_drones=2]
+hub: P3 3 4 [zone=priority color=blue max_drones=2]
+
+hub: P_alt1 2 2 [color=yellow max_drones=2]
+hub: P_alt2 3 2 [color=yellow max_drones=2]
+
+hub: P_loop1 1 3 [color=yellow max_drones=2]
+hub: P_loop2 2 4 [color=yellow max_drones=2]
+
+# --- CROSS‑ROUTE INTERSECTIONS (skrzyżowania między trasami) ---
+
+hub: X_low 4 -1 [color=yellow max_drones=3]
+hub: X_mid 4 1 [color=yellow max_drones=3]
+hub: X_high 4 2 [color=yellow max_drones=3]
+
+# --- FINAL MERGE ZONE ---
+
+hub: pre_final 5 0 [color=yellow max_drones=4]
+hub: final_merge 6 0 [color=yellow max_drones=5]
+
+end_hub: goal 7 0 [color=green max_drones=5]
+
+# --- CONNECTIONS (wszystkie z max_link_capacity) ---
+
+# Left main
+connection: start-L1 [max_link_capacity=3]
+connection: L1-L2 [max_link_capacity=2]
+connection: L2-L3 [max_link_capacity=2]
+connection: L3-X_low [max_link_capacity=2]
+
+# Left alternates
+connection: L1-L_alt1 [max_link_capacity=2]
+connection: L_alt1-L_alt2 [max_link_capacity=2]
+connection: L_alt2-X_low [max_link_capacity=2]
+
+# Left loops
+connection: L1-L_loop1 [max_link_capacity=2]
+connection: L_loop1-L_loop2 [max_link_capacity=2]
+connection: L_loop2-L3 [max_link_capacity=2]
+
+# Center main
+connection: start-C1 [max_link_capacity=4]
+connection: C1-C2 [max_link_capacity=4]
+connection: C2-C3 [max_link_capacity=4]
+connection: C3-C4 [max_link_capacity=4]
+connection: C4-X_mid [max_link_capacity=3]
+
+# Right main
+connection: start-P1 [max_link_capacity=4]
+connection: P1-P2 [max_link_capacity=3]
+connection: P2-P3 [max_link_capacity=2]
+connection: P3-X_high [max_link_capacity=2]
+
+# Right alternates
+connection: P1-P_alt1 [max_link_capacity=2]
+connection: P_alt1-P_alt2 [max_link_capacity=2]
+connection: P_alt2-X_high [max_link_capacity=2]
+
+# Right loops
+connection: P1-P_loop1 [max_link_capacity=2]
+connection: P_loop1-P_loop2 [max_link_capacity=2]
+connection: P_loop2-P3 [max_link_capacity=2]
+
+# Cross‑route connections
+connection: C2-L_alt1 [max_link_capacity=2]
+connection: C2-P_alt1 [max_link_capacity=2]
+
+connection: C3-L_alt2 [max_link_capacity=2]
+connection: C3-P_alt2 [max_link_capacity=2]
+
+# Merge zone
+connection: X_low-pre_final [max_link_capacity=3]
+connection: X_mid-pre_final [max_link_capacity=3]
+connection: X_high-pre_final [max_link_capacity=3]
+
+connection: pre_final-final_merge [max_link_capacity=4]
+connection: final_merge-goal [max_link_capacity=5]

@@ -1,9 +1,10 @@
-from typing import Optional, List, Any
+from typing import List, Any, Union
+
 
 class Hub:
     def __init__(
-            self, hub_type: str, name: str, x: int, y: int,
-            extras: Optional[str] = None):
+            self, hub_type: str, name: str, x: str, y: str,
+            extras: Union[str, None]):
         self.name = name
         self.hub_type = hub_type[:-1]
         self.x = int(x)
@@ -12,20 +13,47 @@ class Hub:
         self.max_drones = 1
         self.zone = 'normal'
         self.process_extras(extras) if extras else None
-        self.block = None
+        self.block: Any = None
         self.drones_amount = 0
         self.connections: List[Any] = []
 
     def process_extras(self, extras: str) -> None:
         extras = extras.removeprefix("[").removesuffix("]")
         lines = extras.split()
+        color = False
+        max_drones = False
+        zone = False
         for line in lines:
             if line.split("=")[0] == "color":
-                self.color = line.split("=")[1]
+                if not color:
+                    color = True
+                    self.color = line.split("=")[1]
+                else:
+                    raise ValueError(
+                        f"Too many color atributes for line \"{extras}\""
+                    )
             elif line.split("=")[0] == "max_drones":
-                self.max_drones = int(line.split("=")[1])
+                if not max_drones:
+                    max_drones = True
+                    self.max_drones = int(line.split("=")[1])
+                else:
+                    raise ValueError(
+                        f"Too many max_drones atributes for line \"{extras}\""
+                    )
             elif line.split("=")[0] == "zone":
-                self.zone = line.split("=")[1]
+                if not zone:
+                    zone = True
+                    if line.split("=")[1] in (
+                            "normal", "priority", "restricted", "blocked"
+                    ):
+                        self.zone = line.split("=")[1]
+                    else:
+                        raise ValueError(
+                            f"Invalid zone \"{line.split('=')[1]}\"")
+                else:
+                    raise ValueError(
+                        f"Too many zone atributes for line \"{extras}\""
+                    )
             else:
                 raise ValueError("Wrong format")
 

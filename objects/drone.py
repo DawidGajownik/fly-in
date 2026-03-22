@@ -38,25 +38,33 @@ class Drone:
         self.place: Union[Hub, Connection] = hub
         self.prev_place: Union[Hub, Connection] = hub
         self.color = all_colors[randint(0, colors_length)]
+        self.x = 0
+        self.y = 0
+        self.prev_x: Union[int, None] = None
+        self.prev_y: Union[int, None] = None
+        self.moved = False
+        self.moves = 0
 
-    def move(self) -> None:
+    def move(self) -> bool:
         end: List[Union[Hub, Connection]] = []
 
         if isinstance(self.place, Connection):
             if self.place.end.drones_amount < self.place.end.max_drones:
                 end = [self.place.end]
         else:
+            end = []
             connections = self.place.connections
             for connection in connections:
-                if connection.active:
-                    if priority_available(connection):
-                        connection.trip()
-                        end = [connection.end]
-                    if normal_available(connection, end):
-                        connection.trip()
-                        end = [connection.end]
-                    if restricted_available(connection, end):
-                        end = [connection]
+                if connection.active and priority_available(connection):
+                    connection.trip()
+                    end = [connection.end]
+            for connection in connections:
+                if connection.active and normal_available(connection, end):
+                    connection.trip()
+                    end = [connection.end]
+            for connection in connections:
+                if connection.active and restricted_available(connection, end):
+                    end = [connection]
         if len(end) > 0:
             end[0].drones_amount += 1
             self.place.drones_amount -= 1
@@ -65,6 +73,10 @@ class Drone:
             print(f"D{self.idx}-"
                   f"{self.destination()}"
                   f"", end=' ')
+            self.moves += 1
+            self.moved = True
+            return True
+        return False
 
     def destination(self) -> str:
         if isinstance(self.place, Hub):

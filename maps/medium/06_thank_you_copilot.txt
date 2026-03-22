@@ -1,0 +1,78 @@
+nb_drones: 100
+
+start_hub: start 0 0 [color=green max_drones=4]
+
+# --- LEFT ROUTE (restricted, trudna, długa) ---
+
+hub: l1 1 -1 [zone=restricted color=red max_drones=2]
+hub: l2 2 -2 [zone=restricted color=red max_drones=2]
+hub: l3 3 -2 [zone=restricted color=red max_drones=2]
+hub: l4 4 -2 [zone=restricted color=red max_drones=2]
+
+# --- CENTER ROUTE (neutral, stabilna) ---
+
+hub: c1 1 0 [color=yellow max_drones=3]
+hub: c2 2 0 [color=yellow max_drones=3]
+hub: c3 3 0 [color=yellow max_drones=3]
+
+# --- RIGHT ROUTE (priority, szybka) ---
+
+hub: p1 1 1 [zone=priority color=blue max_drones=3]
+hub: p2 2 2 [zone=priority color=blue max_drones=2]
+hub: p3 3 2 [zone=priority color=blue max_drones=2]
+
+# --- SIDE LOOPS / ALTERNATE PATHS ---
+
+hub: loop_a 2 -1 [color=yellow max_drones=2]
+hub: loop_b 3 -1 [color=yellow max_drones=2]
+
+hub: loop_c 2 1 [color=yellow max_drones=2]
+hub: loop_d 3 1 [color=yellow max_drones=2]
+
+# --- MERGE ZONES ---
+
+hub: merge_low 4 -1 [color=yellow max_drones=3]
+hub: merge_mid 4 0 [color=yellow max_drones=3]
+hub: merge_high 4 1 [color=yellow max_drones=3]
+
+hub: final_merge 5 0 [color=yellow max_drones=4]
+
+end_hub: goal 6 0 [color=green max_drones=4]
+
+# --- CONNECTIONS (wszystkie z max_link_capacity) ---
+
+# Left route
+connection: start-l1 [max_link_capacity=3]
+connection: l1-l2 [max_link_capacity=2]
+connection: l2-l3 [max_link_capacity=2]
+connection: l3-l4 [max_link_capacity=2]
+connection: l4-merge_low [max_link_capacity=2]
+
+# Center route
+connection: start-c1 [max_link_capacity=4]
+connection: c1-c2 [max_link_capacity=3]
+connection: c2-c3 [max_link_capacity=3]
+connection: c3-merge_mid [max_link_capacity=3]
+
+# Right route
+connection: start-p1 [max_link_capacity=4]
+connection: p1-p2 [max_link_capacity=3]
+connection: p2-p3 [max_link_capacity=2]
+connection: p3-merge_high [max_link_capacity=2]
+
+# Side loops (left)
+connection: c1-loop_a [max_link_capacity=2]
+connection: loop_a-loop_b [max_link_capacity=2]
+connection: loop_b-merge_low [max_link_capacity=2]
+
+# Side loops (right)
+connection: c1-loop_c [max_link_capacity=2]
+connection: loop_c-loop_d [max_link_capacity=2]
+connection: loop_d-merge_high [max_link_capacity=2]
+
+# Merge zone
+connection: merge_low-final_merge [max_link_capacity=3]
+connection: merge_mid-final_merge [max_link_capacity=3]
+connection: merge_high-final_merge [max_link_capacity=3]
+
+connection: final_merge-goal [max_link_capacity=4]

@@ -6,16 +6,18 @@ MAP =
 
 .PHONY: install run debug clean lint lint-strict build
 
+ALLOWED_TARGETS := install run debug clean lint lint-strict build
+
+INVALID_TARGETS := $(filter-out $(ALLOWED_TARGETS),$(MAKECMDGOALS))
+
+ifneq ($(INVALID_TARGETS),)
+$(error Usage: python fly_in.py <filename> or: make run MAP=<filename>)
+endif
+
 install:
 	$(PYTHON) -m venv $(VENV)
 	$(BIN)/$(PIP) install --upgrade pip
 	$(BIN)/$(PIP) install flake8 mypy pygame
-
-build:
-	$(BIN)/$(PYTHON) setup.py sdist bdist_wheel
-	mv dist/*.whl .
-	mv dist/*.tar.gz .
-	rm -rf dist build *.egg-info
 
 run:
 	$(BIN)/$(PYTHON) fly_in.py $(MAP)
