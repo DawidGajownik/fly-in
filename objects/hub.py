@@ -1,3 +1,5 @@
+"""Definicje klas modelowych (Hub, Connection, Drone, Block) używane przez symulator."""
+
 from typing import List, Any, Union
 
 

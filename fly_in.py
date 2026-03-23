@@ -1,3 +1,6 @@
+"""Główny skrypt: parsuje plik mapy, tworzy graf hubów i połącze
+ń, oraz renderuje symulację za pomocą pygame."""
+
 import math
 import sys
 from copy import copy
@@ -362,9 +365,8 @@ def compute_weighted_position(
 
 
 def set_drones_coordinates_when_in_the_middle(
-        drones: List[Drone], scale: int, screen: Any,
-        x_min: int, y_min: int,
-        radius: int, font: Any, current_frame: int) -> None:
+        drones: List[Drone], scale: int, x_min: int, y_min: int,
+        current_frame: int) -> None:
     for drone in drones:
         if isinstance(drone.place, Connection):
             start_hubs = drone.place.start.block.hubs
@@ -518,8 +520,8 @@ def main() -> None:
             draw_connections_stops(
                 connections, scale, screen, x_min, y_min, radius)
             set_drones_coordinates_when_in_the_middle(
-                drones, scale, screen, x_min,
-                y_min, radius, font, current_frame)
+                drones, scale, x_min,
+                y_min, current_frame)
             draw_drones(
                 drones, font, screen, radius,
                 current_frame, ANIM_FRAMES, the_colors)

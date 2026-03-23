@@ -1,3 +1,5 @@
+"""Definicje klas modelowych (Hub, Connection, Drone, Block) używane przez symulator."""
+
 from .hub import Hub
 from .connection import Connection
 from random import randint
@@ -47,7 +49,6 @@ class Drone:
 
     def move(self) -> bool:
         end: List[Union[Hub, Connection]] = []
-
         if isinstance(self.place, Connection):
             if self.place.end.drones_amount < self.place.end.max_drones:
                 end = [self.place.end]
