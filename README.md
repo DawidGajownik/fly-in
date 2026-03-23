@@ -54,5 +54,6 @@ AI usage
 ## Project structure
 
 - fly_in.py — main program and rendering loop
+- objects/ - objects used to OOP
 - maps/ — sample and user map files
 

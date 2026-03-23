@@ -1,6 +1,3 @@
-"""Module __init__.py. Brief description."""
-
-
 from .hub import Hub
 from .connection import Connection
 from .block import Block

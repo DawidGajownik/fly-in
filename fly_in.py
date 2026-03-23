@@ -1,7 +1,3 @@
-"""Module fly_in.py. Brief description."""
-
-
-
 import math
 import sys
 from copy import copy
@@ -14,7 +10,10 @@ from objects import Block, Connection, Drone, Hub
 def handle_file(
         args: List[str]
 ) -> Union[Tuple[List[Hub], List[Connection], List[Drone]]]:
-"""handle_file function. Brief description."""
+    """
+    Function that takes arguments, then takes the filename,
+    read the file and convert it to objects.
+    """
     hubs: List[Hub] = []
     connections = []
     drones_amount = 0
@@ -108,7 +107,11 @@ def set_drones_coordinates(
         surface: Any, x: int, y: int, size: int, count: int,
         color: tuple[int, int, int], drones: int,
         drones_here: List[Drone], current_frame: int) -> None:
-"""set_drones_coordinates function. Brief description."""
+    """
+    Function set the coordinates to drones
+    where they will be rendered on the screen.
+    Only for drones which are on the hub.
+    """
     if count <= 0:
         return
 
@@ -136,7 +139,10 @@ def set_drones_coordinates(
 
 
 def loop_checker(hub: Hub, checked_hubs: List[Hub]) -> None:
-"""loop_checker function. Brief description."""
+    """
+    Function that checks looped connections and make them
+    inactive.
+    """
     if any(hub.hub_type == "end_hub" for hub in checked_hubs):
         return
     checked_hubs.append(hub)
@@ -150,7 +156,7 @@ def loop_checker(hub: Hub, checked_hubs: List[Hub]) -> None:
 
 
 def finished(drones: List[Drone]) -> bool:
-"""finished function. Brief description."""
+    """Function returning True if all drones are on the end_hub."""
     for drone in drones:
         if (isinstance(drone.place, Connection)
                 or drone.place.hub_type != "end_hub"
@@ -162,7 +168,10 @@ def finished(drones: List[Drone]) -> bool:
 def dead_end_checker(
         hubs: List[Hub], connections: List[Connection]
 ) -> None:
-"""dead_end_checker function. Brief description."""
+    """
+    Function finding dead ended connection and
+    deactivating them.
+    """
     still_removing = True
     while still_removing:
         still_removing = False
@@ -182,7 +191,7 @@ def dead_end_checker(
 def get_start_pos(
         connection: Connection, x_min: int, scale: int, y_min: int,
         start_y_divider: int, start_y_offset: int) -> tuple[int, int]:
-"""get_start_pos function. Brief description."""
+    """Function returning x i y to beginning of connection."""
     return (
         (connection.start.x - x_min) * scale + scale // 2,
         (connection.start.y - y_min) * scale + scale
@@ -193,7 +202,7 @@ def get_start_pos(
 def get_end_pos(
         connection: Connection, x_min: int, scale: int, y_min: int,
         end_y_divider: int, end_y_offset: int) -> tuple[int, int]:
-"""get_end_pos function. Brief description."""
+    """Function returning x i y to end of connection."""
     return (
         (connection.end.x - x_min) * scale + scale // 2,
         (connection.end.y - y_min) * scale + scale
@@ -204,7 +213,7 @@ def get_end_pos(
 def draw_connections(
         connections: List[Connection], scale: int,
         screen: Any, x_min: int, y_min: int) -> None:
-"""draw_connections function. Brief description."""
+    """Function drawing connection between hubs."""
     for connection in connections:
         start_hubs = connection.start.block.hubs
         end_hubs = connection.end.block.hubs
@@ -239,7 +248,7 @@ def draw_connections(
 
 
 def choose_color(brightness: int) -> Tuple[int, int, int]:
-"""choose_color function. Brief description."""
+    """Choosing color function, to make text readable"""
     if brightness >= (255 * 3) // 2:
         return 0, 0, 0
     return 255, 255, 255
@@ -248,7 +257,7 @@ def choose_color(brightness: int) -> Tuple[int, int, int]:
 def choose_hub_color(zone: str)\
         -> (pygame.Color | int | str | tuple[int, int, int]
             | tuple[int, int, int, int] | Sequence[int]):
-"""choose_hub_color function. Brief description."""
+    """Choosing hub color function, to recognize the zone."""
     if zone == "normal":
         return "yellow"
     elif zone == "priority":
@@ -266,7 +275,9 @@ def draw_hubs(
         y_min: int, screen: Any, square_size: int,
         the_colors: Dict[str, tuple[int, int, int, int]],
         font: Any, current_frame: int) -> None:
-"""draw_hubs function. Brief description."""
+    """
+    Drawing hub function.
+    """
     for line in blocks:
         for block in line:
             if len(block.hubs) > 0:
@@ -332,7 +343,11 @@ def draw_hubs(
 def draw_connections_stops(
         connections: List[Connection], scale: int,
         screen: Any, x_min: int, y_min: int, radius: int) -> None:
-"""draw_connections_stops function. Brief description."""
+    """
+    Function that draws place for drones which are
+    between two hubs
+    (only when connection destination is restricted hub)
+    """
     for connection in connections:
         if connection.end.zone == "restricted":
             start_hubs = connection.start.block.hubs
@@ -361,7 +376,10 @@ def compute_weighted_position(
         p1: tuple[int, int],
         p2: tuple[int | None, int | None],
         frame: int, total_frames: int) -> tuple[float, float]:
-"""compute_weighted_position function. Brief description."""
+    """
+    Function that returns coordinates to draw drone
+    depending on actually rendered frame.
+    """
     if (p2[0] is None or p2[1] is None
             or (p2[0] == 0 and p2[1] == 0) or p1 == p2):
         return p1
@@ -381,7 +399,11 @@ def compute_weighted_position(
 def set_drones_coordinates_when_in_the_middle(
         drones: List[Drone], scale: int, x_min: int, y_min: int,
         current_frame: int) -> None:
-"""set_drones_coordinates_when_in_the_middle function. Brief description."""
+    """
+    Function set the coordinates to drones
+    where they will be rendered on the screen.
+    Only for drones which are on the connection.
+    """
     for drone in drones:
         if isinstance(drone.place, Connection):
             start_hubs = drone.place.start.block.hubs
@@ -411,7 +433,7 @@ def set_drones_coordinates_when_in_the_middle(
 
 def make_moves(
         drones: List[Drone], connections: List[Connection]) -> tuple[int, int]:
-"""make_moves function. Brief description."""
+    """Loop which allows each drone to one move."""
     moved = True
     res = False
     counter = 0
@@ -431,7 +453,7 @@ def make_moves(
 def put_hubs_to_block(
         y_min: int, y_max: int, x_min: int,
         x_max: int, hubs: List[Hub]) -> List[List[Block]]:
-"""put_hubs_to_block function. Brief description."""
+    """Function that puts each hub to its block."""
     blocks = []
     for y in range(y_min, y_max + 1):
         blocks_line = []
@@ -447,7 +469,7 @@ def put_hubs_to_block(
 
 
 def set_corners(hubs: List[Hub]) -> tuple[int, int, int, int]:
-"""set_corners function. Brief description."""
+    """finding minimal/maximal coordinates for hubs"""
     x_min = 0
     y_min = 0
     x_max = 0
@@ -465,7 +487,7 @@ def set_corners(hubs: List[Hub]) -> tuple[int, int, int, int]:
 
 
 def set_scale(width: int, size_x: int, height: int, size_y: int) -> int:
-"""set_scale function. Brief description."""
+    """Setting scale"""
     if width // size_x < height // size_y:
         return width // size_x
     return height // size_y
@@ -475,7 +497,7 @@ def draw_drones(
         drones: List[Drone], font: Any, screen: Any,
         radius: int, frame: int, total_frames: int,
         the_colors: dict[str, tuple[int, int, int, int]]) -> None:
-"""draw_drones function. Brief description."""
+    """Drawing drones function."""
     frame = int(frame * 1.2)
     if frame > total_frames:
         frame = total_frames
@@ -492,7 +514,16 @@ def draw_drones(
 
 
 def main() -> None:
-"""main function. Brief description."""
+    """
+    Main program function.
+    1. Parsing file.
+    2. Initializing pygame
+    3. Getting screen size
+    4. Finding map corners coordinates.
+    5. Setting scale,
+    6. Setting pygame data.
+    7. Rendering project in loop.
+    """
     try:
         hubs, connections, drones = handle_file(sys.argv)
         pygame.init()
@@ -528,11 +559,15 @@ def main() -> None:
                     sys.exit()
             screen.fill(pygame.Color("darkblue"))
             for i in range(1, width):
-                if i%40 == 0:
-                    pygame.draw.line(screen, pygame.Color("blue"), (i, 0), (i, height), 1)
+                if i % 40 == 0:
+                    pygame.draw.line(
+                        screen, pygame.Color("blue"),
+                        (i, 0), (i, height), 1)
             for i in range(1, height):
                 if i % 40 == 0:
-                    pygame.draw.line(screen, pygame.Color("blue"), (0, i), (width, i), 1)
+                    pygame.draw.line(
+                        screen, pygame.Color("blue"),
+                        (0, i), (width, i), 1)
             draw_connections(
                 connections, scale, screen, x_min, y_min)
             draw_hubs(
@@ -546,7 +581,8 @@ def main() -> None:
             draw_drones(
                 drones, font, screen, radius,
                 current_frame, ANIM_FRAMES, the_colors)
-            text = font_counter.render(str(counter), True, pygame.Color("white"))
+            text = font_counter.render(
+                str(counter), True, pygame.Color("white"))
             text_r = text.get_rect(center=(20, (size_y * scale) - 20))
             screen.blit(text, text_r)
             pygame.display.flip()

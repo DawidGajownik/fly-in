@@ -5,12 +5,12 @@ from typing import List, Any, Union
 
 
 class Hub:
-    """Hub class. Brief description."""
+    """Hub class."""
 
     def __init__(
             self, hub_type: str, name: str, x: str, y: str,
             extras: Union[str, None]):
-"""__init__ function. Brief description."""
+        """__init__ function. Brief description."""
         self.name = name
         self.hub_type = hub_type[:-1]
         self.x = int(x)
@@ -24,7 +24,11 @@ class Hub:
         self.connections: List[Any] = []
 
     def process_extras(self, extras: str) -> None:
-"""process_extras function. Brief description."""
+        """
+        process_extras function. A function that handles
+        additional parameters from the map file and converts
+        them into object parameters.
+        """
         extras = extras.removeprefix("[").removesuffix("]")
         lines = extras.split()
         color = False
@@ -65,7 +69,7 @@ class Hub:
                 raise ValueError("Wrong format")
 
     def __str__(self) -> str:
-"""__str__ function. Brief description."""
+        """__str__ function."""
         return (f"{self.__class__.__name__}:"
                 f" name = {self.name}: type = {self.hub_type}:"
                 f" x = {self.x}, y = {self.y}, color = {self.color},"
