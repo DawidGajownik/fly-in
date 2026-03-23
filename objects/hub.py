@@ -10,19 +10,7 @@ class Hub:
     def __init__(
             self, hub_type: str, name: str, x: str, y: str,
             extras: Union[str, None]):
-        """__init__ function. Brief description.
-
-        Args:
-            hub_type (type): Description.
-            name (type): Description.
-            x (type): Description.
-            y (type): Description.
-            extras (type): Description.
-
-        Returns:
-            None: Description.
-
-        """
+"""__init__ function. Brief description."""
         self.name = name
         self.hub_type = hub_type[:-1]
         self.x = int(x)
@@ -36,15 +24,7 @@ class Hub:
         self.connections: List[Any] = []
 
     def process_extras(self, extras: str) -> None:
-        """process_extras function. Brief description.
-
-        Args:
-            extras (type): Description.
-
-        Returns:
-            None: Description.
-
-        """
+"""process_extras function. Brief description."""
         extras = extras.removeprefix("[").removesuffix("]")
         lines = extras.split()
         color = False
@@ -85,12 +65,7 @@ class Hub:
                 raise ValueError("Wrong format")
 
     def __str__(self) -> str:
-        """__str__ function. Brief description.
-
-        Returns:
-            str: Description.
-
-        """
+"""__str__ function. Brief description."""
         return (f"{self.__class__.__name__}:"
                 f" name = {self.name}: type = {self.hub_type}:"
                 f" x = {self.x}, y = {self.y}, color = {self.color},"

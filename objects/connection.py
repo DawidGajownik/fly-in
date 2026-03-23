@@ -11,17 +11,7 @@ class Connection:
     def __init__(
             self, start: Hub, end: Hub,
             extras: Optional[str] = None) -> None:
-        """__init__ function. Brief description.
-
-        Args:
-            start (type): Description.
-            end (type): Description.
-            extras (type): Description.
-
-        Returns:
-            None: Description.
-
-        """
+"""__init__ function. Brief description."""
         self.start = start
         self.end = end
         self.drones_amount = 0
@@ -34,15 +24,7 @@ class Connection:
             self.max_drones = self.end.max_drones
 
     def process_extras(self, extras: str) -> None:
-        """process_extras function. Brief description.
-
-        Args:
-            extras (type): Description.
-
-        Returns:
-            None: Description.
-
-        """
+"""process_extras function. Brief description."""
         extras = extras.removeprefix("[").removesuffix("]")
         lines = extras.split()
         for line in lines:
@@ -53,48 +35,23 @@ class Connection:
                 raise ValueError
 
     def trip(self) -> None:
-        """trip function. Brief description.
-
-        Returns:
-            None: Description.
-
-        """
+"""trip function. Brief description."""
         self.trips += 1
 
     def trips_reset(self) -> None:
-        """trips_reset function. Brief description.
-
-        Returns:
-            None: Description.
-
-        """
+"""trips_reset function. Brief description."""
         self.trips = 0
 
     def can_go(self) -> bool:
-        """can_go function. Brief description.
-
-        Returns:
-            bool: Description.
-
-        """
+"""can_go function. Brief description."""
         return self.trips < self.max_trips
 
     def deactivate(self) -> None:
-        """deactivate function. Brief description.
-
-        Returns:
-            None: Description.
-
-        """
+"""deactivate function. Brief description."""
         self.active = False
 
     def __str__(self) -> str:
-        """__str__ function. Brief description.
-
-        Returns:
-            str: Description.
-
-        """
+"""__str__ function. Brief description."""
         return (f"{self.__class__.__name__}:"
                 f" {self.start.name} - {self.end.name},"
                 f" capacity = {self.max_trips}")
