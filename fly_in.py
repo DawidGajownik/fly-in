@@ -87,8 +87,11 @@ def handle_file(
                             print("Wrong line", line)
                             sys.exit(1)
         else:
-            print("Too many arguments\nUsage: python fly_in.py <filename>")
+            print("Too many arguments\n", usage)
             sys.exit(1)
+    except IndexError:
+        print(usage)
+        sys.exit(1)
     except FileNotFoundError as e:
         print(f"File \"{e.filename}\" not found")
         sys.exit(1)
