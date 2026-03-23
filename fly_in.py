@@ -1,5 +1,6 @@
-"""Główny skrypt: parsuje plik mapy, tworzy graf hubów i połącze
-ń, oraz renderuje symulację za pomocą pygame."""
+"""Module fly_in.py. Brief description."""
+
+
 
 import math
 import sys
@@ -13,6 +14,15 @@ from objects import Block, Connection, Drone, Hub
 def handle_file(
         args: List[str]
 ) -> Union[Tuple[List[Hub], List[Connection], List[Drone]]]:
+    """handle_file function. Brief description.
+
+    Args:
+        args (type): Description.
+
+    Returns:
+        Union[Tuple[List[Hub], List[Connection], List[Drone]]]: Description.
+
+    """
     hubs: List[Hub] = []
     connections = []
     drones_amount = 0
@@ -106,6 +116,23 @@ def set_drones_coordinates(
         surface: Any, x: int, y: int, size: int, count: int,
         color: tuple[int, int, int], drones: int,
         drones_here: List[Drone], current_frame: int) -> None:
+    """set_drones_coordinates function. Brief description.
+
+    Args:
+        surface (type): Description.
+        x (type): Description.
+        y (type): Description.
+        size (type): Description.
+        count (type): Description.
+        color (type): Description.
+        drones (type): Description.
+        drones_here (type): Description.
+        current_frame (type): Description.
+
+    Returns:
+        None: Description.
+
+    """
     if count <= 0:
         return
 
@@ -133,6 +160,16 @@ def set_drones_coordinates(
 
 
 def loop_checker(hub: Hub, checked_hubs: List[Hub]) -> None:
+    """loop_checker function. Brief description.
+
+    Args:
+        hub (type): Description.
+        checked_hubs (type): Description.
+
+    Returns:
+        None: Description.
+
+    """
     if any(hub.hub_type == "end_hub" for hub in checked_hubs):
         return
     checked_hubs.append(hub)
@@ -146,6 +183,15 @@ def loop_checker(hub: Hub, checked_hubs: List[Hub]) -> None:
 
 
 def finished(drones: List[Drone]) -> bool:
+    """finished function. Brief description.
+
+    Args:
+        drones (type): Description.
+
+    Returns:
+        bool: Description.
+
+    """
     for drone in drones:
         if (isinstance(drone.place, Connection)
                 or drone.place.hub_type != "end_hub"
@@ -157,6 +203,16 @@ def finished(drones: List[Drone]) -> bool:
 def dead_end_checker(
         hubs: List[Hub], connections: List[Connection]
 ) -> None:
+    """dead_end_checker function. Brief description.
+
+    Args:
+        hubs (type): Description.
+        connections (type): Description.
+
+    Returns:
+        None: Description.
+
+    """
     still_removing = True
     while still_removing:
         still_removing = False
@@ -176,6 +232,20 @@ def dead_end_checker(
 def get_start_pos(
         connection: Connection, x_min: int, scale: int, y_min: int,
         start_y_divider: int, start_y_offset: int) -> tuple[int, int]:
+    """get_start_pos function. Brief description.
+
+    Args:
+        connection (type): Description.
+        x_min (type): Description.
+        scale (type): Description.
+        y_min (type): Description.
+        start_y_divider (type): Description.
+        start_y_offset (type): Description.
+
+    Returns:
+        tuple[int, int]: Description.
+
+    """
     return (
         (connection.start.x - x_min) * scale + scale // 2,
         (connection.start.y - y_min) * scale + scale
@@ -186,6 +256,20 @@ def get_start_pos(
 def get_end_pos(
         connection: Connection, x_min: int, scale: int, y_min: int,
         end_y_divider: int, end_y_offset: int) -> tuple[int, int]:
+    """get_end_pos function. Brief description.
+
+    Args:
+        connection (type): Description.
+        x_min (type): Description.
+        scale (type): Description.
+        y_min (type): Description.
+        end_y_divider (type): Description.
+        end_y_offset (type): Description.
+
+    Returns:
+        tuple[int, int]: Description.
+
+    """
     return (
         (connection.end.x - x_min) * scale + scale // 2,
         (connection.end.y - y_min) * scale + scale
@@ -196,6 +280,19 @@ def get_end_pos(
 def draw_connections(
         connections: List[Connection], scale: int,
         screen: Any, x_min: int, y_min: int) -> None:
+    """draw_connections function. Brief description.
+
+    Args:
+        connections (type): Description.
+        scale (type): Description.
+        screen (type): Description.
+        x_min (type): Description.
+        y_min (type): Description.
+
+    Returns:
+        None: Description.
+
+    """
     for connection in connections:
         start_hubs = connection.start.block.hubs
         end_hubs = connection.end.block.hubs
@@ -230,6 +327,15 @@ def draw_connections(
 
 
 def choose_color(brightness: int) -> Tuple[int, int, int]:
+    """choose_color function. Brief description.
+
+    Args:
+        brightness (type): Description.
+
+    Returns:
+        Tuple[int, int, int]: Description.
+
+    """
     if brightness >= (255 * 3) // 2:
         return 0, 0, 0
     return 255, 255, 255
@@ -238,6 +344,15 @@ def choose_color(brightness: int) -> Tuple[int, int, int]:
 def choose_hub_color(zone: str)\
         -> (pygame.Color | int | str | tuple[int, int, int]
             | tuple[int, int, int, int] | Sequence[int]):
+    """choose_hub_color function. Brief description.
+
+    Args:
+        zone (type): Description.
+
+    Returns:
+        pygame.Color | int | str | tuple[int, int, int] | tuple[int, int, int, int] | Sequence[int]: Description.
+
+    """
     if zone == "normal":
         return "yellow"
     elif zone == "priority":
@@ -255,6 +370,24 @@ def draw_hubs(
         y_min: int, screen: Any, square_size: int,
         the_colors: Dict[str, tuple[int, int, int, int]],
         font: Any, current_frame: int) -> None:
+    """draw_hubs function. Brief description.
+
+    Args:
+        blocks (type): Description.
+        drones (type): Description.
+        scale (type): Description.
+        x_min (type): Description.
+        y_min (type): Description.
+        screen (type): Description.
+        square_size (type): Description.
+        the_colors (type): Description.
+        font (type): Description.
+        current_frame (type): Description.
+
+    Returns:
+        None: Description.
+
+    """
     for line in blocks:
         for block in line:
             if len(block.hubs) > 0:
@@ -320,6 +453,20 @@ def draw_hubs(
 def draw_connections_stops(
         connections: List[Connection], scale: int,
         screen: Any, x_min: int, y_min: int, radius: int) -> None:
+    """draw_connections_stops function. Brief description.
+
+    Args:
+        connections (type): Description.
+        scale (type): Description.
+        screen (type): Description.
+        x_min (type): Description.
+        y_min (type): Description.
+        radius (type): Description.
+
+    Returns:
+        None: Description.
+
+    """
     for connection in connections:
         if connection.end.zone == "restricted":
             start_hubs = connection.start.block.hubs
@@ -348,6 +495,18 @@ def compute_weighted_position(
         p1: tuple[int, int],
         p2: tuple[int | None, int | None],
         frame: int, total_frames: int) -> tuple[float, float]:
+    """compute_weighted_position function. Brief description.
+
+    Args:
+        p1 (type): Description.
+        p2 (type): Description.
+        frame (type): Description.
+        total_frames (type): Description.
+
+    Returns:
+        tuple[float, float]: Description.
+
+    """
     if (p2[0] is None or p2[1] is None
             or (p2[0] == 0 and p2[1] == 0) or p1 == p2):
         return p1
@@ -367,6 +526,19 @@ def compute_weighted_position(
 def set_drones_coordinates_when_in_the_middle(
         drones: List[Drone], scale: int, x_min: int, y_min: int,
         current_frame: int) -> None:
+    """set_drones_coordinates_when_in_the_middle function. Brief description.
+
+    Args:
+        drones (type): Description.
+        scale (type): Description.
+        x_min (type): Description.
+        y_min (type): Description.
+        current_frame (type): Description.
+
+    Returns:
+        None: Description.
+
+    """
     for drone in drones:
         if isinstance(drone.place, Connection):
             start_hubs = drone.place.start.block.hubs
@@ -396,6 +568,16 @@ def set_drones_coordinates_when_in_the_middle(
 
 def make_moves(
         drones: List[Drone], connections: List[Connection]) -> tuple[int, int]:
+    """make_moves function. Brief description.
+
+    Args:
+        drones (type): Description.
+        connections (type): Description.
+
+    Returns:
+        tuple[int, int]: Description.
+
+    """
     moved = True
     res = False
     counter = 0
@@ -415,6 +597,19 @@ def make_moves(
 def put_hubs_to_block(
         y_min: int, y_max: int, x_min: int,
         x_max: int, hubs: List[Hub]) -> List[List[Block]]:
+    """put_hubs_to_block function. Brief description.
+
+    Args:
+        y_min (type): Description.
+        y_max (type): Description.
+        x_min (type): Description.
+        x_max (type): Description.
+        hubs (type): Description.
+
+    Returns:
+        List[List[Block]]: Description.
+
+    """
     blocks = []
     for y in range(y_min, y_max + 1):
         blocks_line = []
@@ -430,6 +625,15 @@ def put_hubs_to_block(
 
 
 def set_corners(hubs: List[Hub]) -> tuple[int, int, int, int]:
+    """set_corners function. Brief description.
+
+    Args:
+        hubs (type): Description.
+
+    Returns:
+        tuple[int, int, int, int]: Description.
+
+    """
     x_min = 0
     y_min = 0
     x_max = 0
@@ -447,6 +651,18 @@ def set_corners(hubs: List[Hub]) -> tuple[int, int, int, int]:
 
 
 def set_scale(width: int, size_x: int, height: int, size_y: int) -> int:
+    """set_scale function. Brief description.
+
+    Args:
+        width (type): Description.
+        size_x (type): Description.
+        height (type): Description.
+        size_y (type): Description.
+
+    Returns:
+        int: Description.
+
+    """
     if width // size_x < height // size_y:
         return width // size_x
     return height // size_y
@@ -456,6 +672,21 @@ def draw_drones(
         drones: List[Drone], font: Any, screen: Any,
         radius: int, frame: int, total_frames: int,
         the_colors: dict[str, tuple[int, int, int, int]]) -> None:
+    """draw_drones function. Brief description.
+
+    Args:
+        drones (type): Description.
+        font (type): Description.
+        screen (type): Description.
+        radius (type): Description.
+        frame (type): Description.
+        total_frames (type): Description.
+        the_colors (type): Description.
+
+    Returns:
+        None: Description.
+
+    """
     frame = int(frame * 1.2)
     if frame > total_frames:
         frame = total_frames
@@ -472,6 +703,12 @@ def draw_drones(
 
 
 def main() -> None:
+    """main function. Brief description.
+
+    Returns:
+        None: Description.
+
+    """
     try:
         hubs, connections, drones = handle_file(sys.argv)
         pygame.init()

@@ -1,4 +1,5 @@
-"""Definicje klas modelowych (Hub, Connection, Drone, Block) używane przez symulator."""
+"""Module __init__.py. Brief description."""
+
 
 from .hub import Hub
 from .connection import Connection

@@ -1,12 +1,28 @@
-"""Definicje klas modelowych (Hub, Connection, Drone, Block) używane przez symulator."""
+"""Module hub.py. Brief description."""
+
 
 from typing import List, Any, Union
 
 
 class Hub:
+    """Hub class. Brief description."""
+
     def __init__(
             self, hub_type: str, name: str, x: str, y: str,
             extras: Union[str, None]):
+        """__init__ function. Brief description.
+
+        Args:
+            hub_type (type): Description.
+            name (type): Description.
+            x (type): Description.
+            y (type): Description.
+            extras (type): Description.
+
+        Returns:
+            None: Description.
+
+        """
         self.name = name
         self.hub_type = hub_type[:-1]
         self.x = int(x)
@@ -20,6 +36,15 @@ class Hub:
         self.connections: List[Any] = []
 
     def process_extras(self, extras: str) -> None:
+        """process_extras function. Brief description.
+
+        Args:
+            extras (type): Description.
+
+        Returns:
+            None: Description.
+
+        """
         extras = extras.removeprefix("[").removesuffix("]")
         lines = extras.split()
         color = False
@@ -60,6 +85,12 @@ class Hub:
                 raise ValueError("Wrong format")
 
     def __str__(self) -> str:
+        """__str__ function. Brief description.
+
+        Returns:
+            str: Description.
+
+        """
         return (f"{self.__class__.__name__}:"
                 f" name = {self.name}: type = {self.hub_type}:"
                 f" x = {self.x}, y = {self.y}, color = {self.color},"
