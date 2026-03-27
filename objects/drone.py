@@ -4,35 +4,6 @@ from random import randint
 from typing import Union, List
 
 
-def priority_available(connection: Connection) -> bool:
-    """Function returning true if priority connection is available."""
-    return (connection.end.drones_amount
-            < connection.end.max_drones
-            and connection.end.zone == "priority"
-            and connection.can_go())
-
-
-def normal_available(
-        connection: Connection,
-        end: List[Hub | Connection]) -> bool:
-    """Function returning true if normal connection is available."""
-    return (len(end) == 0
-            and connection.end.drones_amount
-            < connection.end.max_drones
-            and connection.end.zone == "normal"
-            and connection.can_go())
-
-
-def restricted_available(
-        connection: Connection,
-        end: List[Hub | Connection]) -> bool:
-    """Function returning true if restricted connection is available."""
-    return (len(end) == 0
-            and connection.drones_amount < connection.max_drones
-            and connection.end.zone == "restricted"
-            and connection.end.drones_amount < connection.end.max_drones)
-
-
 class Drone:
     """Drone class"""
 
@@ -61,29 +32,31 @@ class Drone:
         moves the drone to the middle of connection as it is
         described in subject.
         """
-        end: List[Union[Hub, Connection]] = []
+        possible_destinations: List[Union[Hub, Connection]] = []
         if isinstance(self.place, Connection):
             if self.place.end.drones_amount < self.place.end.max_drones:
-                end = [self.place.end]
+                possible_destinations = [self.place.end]
         else:
-            end = []
+            possible_destinations = []
             connections = self.place.connections
             for connection in connections:
-                if connection.active and priority_available(connection):
+                if connection.priority_available():
                     connection.trip()
-                    end = [connection.end]
+                    possible_destinations = [connection.end]
             for connection in connections:
-                if connection.active and normal_available(connection, end):
+                if (connection.normal_available()
+                        and len(possible_destinations) == 0):
                     connection.trip()
-                    end = [connection.end]
+                    possible_destinations = [connection.end]
             for connection in connections:
-                if connection.active and restricted_available(connection, end):
-                    end = [connection]
-        if len(end) > 0:
-            end[0].drones_amount += 1
+                if (connection.restricted_available(self)
+                        and len(possible_destinations) == 0):
+                    possible_destinations = [connection]
+        if len(possible_destinations) > 0:
+            possible_destinations[0].drones_amount += 1
             self.place.drones_amount -= 1
             self.prev_place = self.place
-            self.place = end[0]
+            self.place = possible_destinations[0]
             print(f"D{self.idx}-"
                   f"{self.destination()}"
                   f"", end=' ')

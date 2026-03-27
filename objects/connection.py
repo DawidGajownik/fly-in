@@ -1,8 +1,6 @@
-"""Module connection.py. Brief description."""
-
-
 from .hub import Hub
 from typing import Optional
+import pygame
 
 
 class Connection:
@@ -33,10 +31,44 @@ class Connection:
         lines = extras.split()
         for line in lines:
             if line.split("=")[0] == "max_link_capacity":
+                if int(line.split("=")[1]) < 1:
+                    raise Exception("max_link_capacity must be >= 1")
                 self.max_drones = int(line.split("=")[1])
                 self.max_trips = int(line.split("=")[1])
             else:
-                raise ValueError
+                raise ValueError(
+                    f"Field can be only 'max_link_capacity'"
+                )
+
+    def priority_available(self) -> bool:
+        """Function returning true if priority connection is available."""
+        return (self.active and self.end.drones_amount
+                < self.end.max_drones
+                and self.end.zone == "priority"
+                and self.can_go())
+
+    def normal_available(self) -> bool:
+        """Function returning true if normal connection is available."""
+        return (self.active and self.end.drones_amount
+                < self.end.max_drones
+                and self.end.zone == "normal"
+                and self.can_go())
+
+    def restricted_available(self, drone) -> bool:
+        """Function returning true if restricted connection is available."""
+        result = (self.active and self.drones_amount < self.max_drones
+                and self.end.zone == "restricted"
+                and self.end.max_drones > self.end.drones_amount)
+        #if self.end.name == "maze_loop2" and drone.idx in (8,10,13,15):
+        #    print(
+        #        "\n\ndrone number", drone.idx,
+        #        "\nself.drones_amount", self.drones_amount,
+        #        "\nself.max_drones", self.max_drones,
+        #        "\nself.end.drones_amount", self.end.drones_amount,
+        #        "\nself.end.max_drones", self.end.max_drones,
+        #        "\nresult", result
+        #    )
+        return result
 
     def trip(self) -> None:
         """Functions adding trips made in this turn."""
@@ -53,6 +85,56 @@ class Connection:
     def deactivate(self) -> None:
         """Functions deactivating connection from usage."""
         self.active = False
+
+    def get_start_pos(
+            self, x_min: int, scale: int, y_min: int,
+            start_y_divider: int, start_y_offset: int) -> tuple[int, int]:
+        """Function returning x andy to beginning of self."""
+        return (
+            (self.start.x - x_min) * scale + scale // 2,
+            (self.start.y - y_min) * scale + scale
+            // start_y_divider + start_y_offset
+        )
+
+    def get_end_pos(
+            self, x_min: int, scale: int, y_min: int,
+            end_y_divider: int, end_y_offset: int) -> tuple[int, int]:
+        """Function returning x and y to end of self."""
+        return (
+            (self.end.x - x_min) * scale + scale // 2,
+            (self.end.y - y_min) * scale + scale
+            // end_y_divider + end_y_offset
+        )
+        
+    def draw(self):
+        start_hubs = self.start.block.hubs
+        end_hubs = self.end.block.hubs
+        start_idx = start_hubs.index(self.start)
+        end_idx = end_hubs.index(self.end)
+        start_y_divider = 2 * len(start_hubs)
+        start_y_offset = scale // len(start_hubs) * start_idx
+        end_y_divider = 2 * len(end_hubs)
+        end_y_offset = scale // len(end_hubs) * end_idx
+        start_pos = self.get_start_pos(x_min, scale, y_min,
+            start_y_divider, start_y_offset)
+        end_pos = self.get_end_pos(x_min, scale, y_min,
+            end_y_divider, end_y_offset)
+        if self.end.zone == 'priority':
+            pygame.draw.line(
+                screen, pygame.Color("green"),
+                start_pos, end_pos, 10 if self.active else 1)
+        elif self.end.zone == 'normal':
+            pygame.draw.line(
+                screen, pygame.Color("yellow"), start_pos, end_pos,
+                10 if self.active else 1)
+        elif self.end.zone == 'restricted':
+            pygame.draw.line(
+                screen, pygame.Color("orange"), start_pos, end_pos,
+                10 if self.active else 1)
+        elif self.end.zone == 'blocked':
+            pygame.draw.line(
+                screen, pygame.Color("red"), start_pos, end_pos,
+                10 if self.active else 1)
 
     def __str__(self) -> str:
         """__str__ function."""
