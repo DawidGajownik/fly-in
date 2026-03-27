@@ -57,3 +57,22 @@ AI usage
 - objects/ - objects used to OOP
 - maps/ — sample and user map files
 
+## Example Input/Output
+
+### Input
+nb_drones: 2
+
+start_hub: start 0 0 [color=green]
+hub: waypoint1 1 0 [color=blue]
+hub: waypoint2 2 0 [color=blue]
+end_hub: goal 3 0 [color=red]
+
+connection: start-waypoint1
+connection: waypoint1-waypoint2
+connection: waypoint2-goal
+
+### Output
+D1-waypoint1 
+D1-waypoint2 D2-waypoint1 
+D1-goal D2-waypoint2 
+D2-goal

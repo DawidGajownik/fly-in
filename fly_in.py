@@ -1,46 +1,8 @@
-import math
 import sys
-from copy import copy
-from typing import List, Any, Dict, Tuple, Sequence, Union
-
 import pygame
-from objects import Block, Connection, Drone, Hub, Parser, Window
-from objects.draw import Draw
-
-
-def set_drones_coordinates(
-        surface: Any, x: int, y: int, size: int, count: int,
-        color: tuple[int, int, int], drones: int,
-        drones_here: List[Drone], current_frame: int) -> None:
-    """
-    Function set the coordinates to drones
-    where they will be rendered on the screen.
-    Only for drones which are on the hub.
-    """
-    if count <= 0:
-        return
-
-    grid = math.ceil(math.sqrt(drones))
-    cell = size / grid
-    radius = int(cell * 0.4)
-
-    drawn = 0
-    for row in range(grid):
-        for col in range(grid):
-            if drawn >= count:
-                return
-            cx = x + col * cell + cell/2
-            cy = y + row * cell + cell/2
-            pygame.draw.circle(
-                surface, pygame.Color("black"),
-                (int(cx), int(cy)), radius+1)
-            pygame.draw.circle(surface, color, (int(cx), int(cy)), radius)
-            if drawn < len(drones_here) and current_frame == 0:
-                drones_here[drawn].prev_x = copy(drones_here[drawn].x)
-                drones_here[drawn].prev_y = copy(drones_here[drawn].y)
-                drones_here[drawn].x = int(cx)
-                drones_here[drawn].y = int(cy)
-            drawn += 1
+from copy import copy
+from typing import List
+from objects import Block, Connection, Drone, Hub, Parser, Window, Draw
 
 
 def loop_checker(hub: Hub, checked_hubs: List[Hub]) -> None:
@@ -91,166 +53,6 @@ def dead_end_checker(
                         if connection.end == hub and connection.active:
                             connection.deactivate()
                             still_removing = True
-
-
-def get_start_pos(
-        connection: Connection, x_min: int, scale: int, y_min: int,
-        start_y_divider: int, start_y_offset: int) -> tuple[int, int]:
-    """Function returning x andy to beginning of connection."""
-    return (
-        (connection.start.x - x_min) * scale + scale // 2,
-        (connection.start.y - y_min) * scale + scale
-        // start_y_divider + start_y_offset
-    )
-
-
-def get_end_pos(
-        connection: Connection, x_min: int, scale: int, y_min: int,
-        end_y_divider: int, end_y_offset: int) -> tuple[int, int]:
-    """Function returning x and y to end of connection."""
-    return (
-        (connection.end.x - x_min) * scale + scale // 2,
-        (connection.end.y - y_min) * scale + scale
-        // end_y_divider + end_y_offset
-    )
-
-
-def draw_connections(
-        connections: List[Connection], win: Window) -> None:
-    """Function drawing connection between hubs."""
-    for connection in connections:
-        start_hubs = connection.start.block.hubs
-        end_hubs = connection.end.block.hubs
-        start_idx = start_hubs.index(connection.start)
-        end_idx = end_hubs.index(connection.end)
-        start_y_divider = 2 * len(start_hubs)
-        start_y_offset = win.scale // len(start_hubs) * start_idx
-        end_y_divider = 2 * len(end_hubs)
-        end_y_offset = win.scale // len(end_hubs) * end_idx
-        start_pos = get_start_pos(
-            connection, win.x_min, win.scale, win.y_min,
-            start_y_divider, start_y_offset)
-        end_pos = get_end_pos(
-            connection, win.x_min, win.scale, win.y_min,
-            end_y_divider, end_y_offset)
-        if connection.end.zone == 'priority':
-            pygame.draw.line(
-                win.screen, pygame.Color("green"),
-                start_pos, end_pos, 10 if connection.active else 1)
-        elif connection.end.zone == 'normal':
-            pygame.draw.line(
-                win.screen, pygame.Color("yellow"), start_pos, end_pos,
-                10 if connection.active else 1)
-        elif connection.end.zone == 'restricted':
-            pygame.draw.line(
-                win.screen, pygame.Color("orange"), start_pos, end_pos,
-                10 if connection.active else 1)
-        elif connection.end.zone == 'blocked':
-            pygame.draw.line(
-                win.screen, pygame.Color("red"), start_pos, end_pos,
-                10 if connection.active else 1)
-
-
-def draw_hubs(draw: Draw,
-        blocks: List[List[Block]], drones: List[Drone], win: Window,
-        the_colors: Dict[str, tuple[int, int, int, int]],
-        font: Any, current_frame: int) -> None:
-    """
-    Drawing hub function.
-    Setting coordinates for drones.
-    """
-    for line in blocks:
-        for block in line:
-            if len(block.hubs) > 0:
-                for i in range(0, len(block.hubs)):
-                    drones_here = []
-                    for drone in drones:
-                        if drone.place == block.hubs[i]:
-                            drones_here.append(drone)
-                    square_x = win.scale * (block.hubs[i].x - win.x_min) + win.scale // 8
-                    square_y = (win.scale * (block.hubs[i].y - win.y_min) + win.scale // 8
-                                + (win.scale // 4 * 3 - 4) * i)
-                    block.hubs[i].draw(win.screen, win.square_size, square_x, square_y)
-                    set_drones_coordinates(
-                        win.screen, square_x + 2, square_y + 2, win.square_size - 8,
-                        block.hubs[i].max_drones, (255, 255, 255),
-                        len(drones), drones_here, current_frame)
-                    brightness = sum(the_colors[block.hubs[i].color][:3])
-                    draw.show_text(
-                        win, font, block.hubs[i].name,
-                        draw.utils.choose_color(brightness),
-                        win.scale * (block.hubs[i].x - win.x_min) + win.scale // 2,
-                        win.scale * (block.hubs[i].y - win.y_min + i) + win.scale
-                        // 2)
-
-
-def draw_connections_stops(
-        connections: List[Connection], win: Window) -> None:
-    """
-    Function that draws place for drones which are
-    between two hubs
-    (only when connection destination is restricted hub)
-    """
-    for connection in connections:
-        if connection.end.zone == "restricted":
-            start_hubs = connection.start.block.hubs
-            end_hubs = connection.end.block.hubs
-            start_y_divider = 2 * len(start_hubs)
-            start_idx = start_hubs.index(connection.start)
-            end_idx = end_hubs.index(connection.end)
-            start_y_offset = win.scale // len(start_hubs) * start_idx
-            end_y_divider = 2 * len(end_hubs)
-            end_y_offset = win.scale // len(end_hubs) * end_idx
-            cx = (((connection.start.x - win.x_min) * win.scale + win.scale // 2) + (
-                    (connection.end.x - win.x_min) * win.scale + win.scale // 2)) // 2
-            cy = (((connection.start.y - win.y_min)
-                   * win.scale + win.scale // start_y_divider + start_y_offset)
-                  + ((connection.end.y - win.y_min) * win.scale
-                     + win.scale // end_y_divider + end_y_offset)) // 2
-            pygame.draw.circle(
-                win.screen, pygame.Color("black"),
-                (int(cx), int(cy)), win.radius + 1)
-            pygame.draw.circle(
-                win.screen, pygame.Color("pink"),
-                (int(cx), int(cy)), win.radius)
-
-
-
-
-
-def set_drones_coordinates_when_in_the_middle(
-        drones: List[Drone], win: Window,
-        current_frame: int) -> None:
-    """
-    Function set the coordinates to drones
-    where they will be rendered on the screen.
-    Only for drones which are on the connection.
-    """
-    for drone in drones:
-        if isinstance(drone.place, Connection):
-            start_hubs = drone.place.start.block.hubs
-            end_hubs = drone.place.end.block.hubs
-            start_y_divider = 2 * len(start_hubs)
-            start_idx = start_hubs.index(drone.place.start)
-            end_idx = end_hubs.index(drone.place.end)
-            start_y_offset = win.scale // len(start_hubs) * start_idx
-            end_y_divider = 2 * len(end_hubs)
-            end_y_offset = win.scale // len(end_hubs) * end_idx
-            cx = (((drone.place.start.x - win.x_min)
-                   * win.scale + win.scale // 2) + (
-                        (drone.place.end.x - win.x_min)
-                        * win.scale + win.scale // 2)) // 2
-            cy = (((drone.place.start.y - win.y_min)
-                   * win.scale + win.scale // start_y_divider + start_y_offset)
-                  + (
-                          (drone.place.end.y - win.y_min)
-                          * win.scale + win.scale // end_y_divider
-                          + end_y_offset)) // 2
-            if current_frame == 0:
-                drone.prev_x = copy(drone.x)
-                drone.prev_y = copy(drone.y)
-                drone.x = cx
-                drone.y = cy
 
 
 def make_moves(
@@ -322,16 +124,8 @@ def main() -> None:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-            draw.draw_grid(win)
-            draw_connections(connections, win)
-            draw_hubs(draw, blocks, drones, win, the_colors, win.font, current_frame)
-            draw_connections_stops(connections, win)
-            set_drones_coordinates_when_in_the_middle(drones, win, current_frame)
-            draw.draw_drones(drones, win.font, win, current_frame, the_colors)
-            draw.show_text(
-                win, win.font_counter, str(counter),
-                pygame.Color("white"), 20, (win.size_y * win.scale) - 20)
-            pygame.display.flip()
+            draw.render(win, connections, blocks, drones,
+                        the_colors, current_frame, counter)
             current_frame = (current_frame + 1) % win.fps
             if current_frame == 0 and not finished(drones):
                 drones.sort(key=lambda dron: dron.moves, reverse=True)

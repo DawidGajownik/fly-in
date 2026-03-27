@@ -38,6 +38,7 @@ def parse_connections(
 
 def name_repeated(
         name: str, elements: List[Hub]) -> bool:
+    """Checking double Hub name entries"""
     for element in elements:
         if element.name == name:
             return True

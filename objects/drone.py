@@ -49,7 +49,7 @@ class Drone:
                     connection.trip()
                     possible_destinations = [connection.end]
             for connection in connections:
-                if (connection.restricted_available(self)
+                if (connection.restricted_available()
                         and len(possible_destinations) == 0):
                     possible_destinations = [connection]
         if len(possible_destinations) > 0:

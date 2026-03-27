@@ -1,6 +1,7 @@
-from .hub import Hub
-from typing import Optional
+from typing import Optional, Callable, Any
 import pygame
+
+from objects import Hub
 
 
 class Connection:
@@ -21,6 +22,62 @@ class Connection:
         if self.end.max_drones < self.max_drones:
             self.max_drones = self.end.max_drones
 
+    def draw(
+            self, win: Any, get_start_pos: Callable,
+            get_end_pos: Callable) -> None:
+        start_hubs = self.start.block.hubs
+        end_hubs = self.end.block.hubs
+        start_idx = start_hubs.index(self.start)
+        end_idx = end_hubs.index(self.end)
+        start_y_divider = 2 * len(start_hubs)
+        start_y_offset = win.scale // len(start_hubs) * start_idx
+        end_y_divider = 2 * len(end_hubs)
+        end_y_offset = win.scale // len(end_hubs) * end_idx
+        start_pos = get_start_pos(
+            self, win.x_min, win.scale, win.y_min,
+            start_y_divider, start_y_offset)
+        end_pos = get_end_pos(
+            self, win.x_min, win.scale, win.y_min,
+            end_y_divider, end_y_offset)
+        if self.end.zone == 'priority':
+            pygame.draw.line(
+                win.screen, pygame.Color("green"),
+                start_pos, end_pos, 10 if self.active else 1)
+        elif self.end.zone == 'normal':
+            pygame.draw.line(
+                win.screen, pygame.Color("yellow"), start_pos, end_pos,
+                10 if self.active else 1)
+        elif self.end.zone == 'restricted':
+            pygame.draw.line(
+                win.screen, pygame.Color("orange"), start_pos, end_pos,
+                10 if self.active else 1)
+        elif self.end.zone == 'blocked':
+            pygame.draw.line(
+                win.screen, pygame.Color("red"), start_pos, end_pos,
+                10 if self.active else 1)
+
+    def draw_stops(self, win: Any) -> None:
+        start_hubs = self.start.block.hubs
+        end_hubs = self.end.block.hubs
+        start_y_divider = 2 * len(start_hubs)
+        start_idx = start_hubs.index(self.start)
+        end_idx = end_hubs.index(self.end)
+        start_y_offset = win.scale // len(start_hubs) * start_idx
+        end_y_divider = 2 * len(end_hubs)
+        end_y_offset = win.scale // len(end_hubs) * end_idx
+        cx = (((self.start.x - win.x_min) * win.scale + win.scale // 2) + (
+                (self.end.x - win.x_min) * win.scale + win.scale // 2)) // 2
+        cy = (((self.start.y - win.y_min)
+               * win.scale + win.scale // start_y_divider + start_y_offset)
+              + ((self.end.y - win.y_min) * win.scale
+                 + win.scale // end_y_divider + end_y_offset)) // 2
+        pygame.draw.circle(
+            win.screen, pygame.Color("black"),
+            (int(cx), int(cy)), win.radius + 1)
+        pygame.draw.circle(
+            win.screen, pygame.Color("pink"),
+            (int(cx), int(cy)), win.radius)
+
     def process_extras(self, extras: str) -> None:
         """
         process_extras function. A function that handles
@@ -37,7 +94,7 @@ class Connection:
                 self.max_trips = int(line.split("=")[1])
             else:
                 raise ValueError(
-                    f"Field can be only 'max_link_capacity'"
+                    "Field can be only 'max_link_capacity'"
                 )
 
     def priority_available(self) -> bool:
@@ -54,20 +111,12 @@ class Connection:
                 and self.end.zone == "normal"
                 and self.can_go())
 
-    def restricted_available(self, drone) -> bool:
+    def restricted_available(self) -> bool:
         """Function returning true if restricted connection is available."""
-        result = (self.active and self.drones_amount < self.max_drones
+        result = (
+                self.active and self.drones_amount < self.max_drones
                 and self.end.zone == "restricted"
                 and self.end.max_drones > self.end.drones_amount)
-        #if self.end.name == "maze_loop2" and drone.idx in (8,10,13,15):
-        #    print(
-        #        "\n\ndrone number", drone.idx,
-        #        "\nself.drones_amount", self.drones_amount,
-        #        "\nself.max_drones", self.max_drones,
-        #        "\nself.end.drones_amount", self.end.drones_amount,
-        #        "\nself.end.max_drones", self.end.max_drones,
-        #        "\nresult", result
-        #    )
         return result
 
     def trip(self) -> None:
@@ -105,36 +154,6 @@ class Connection:
             (self.end.y - y_min) * scale + scale
             // end_y_divider + end_y_offset
         )
-        
-    def draw(self):
-        start_hubs = self.start.block.hubs
-        end_hubs = self.end.block.hubs
-        start_idx = start_hubs.index(self.start)
-        end_idx = end_hubs.index(self.end)
-        start_y_divider = 2 * len(start_hubs)
-        start_y_offset = scale // len(start_hubs) * start_idx
-        end_y_divider = 2 * len(end_hubs)
-        end_y_offset = scale // len(end_hubs) * end_idx
-        start_pos = self.get_start_pos(x_min, scale, y_min,
-            start_y_divider, start_y_offset)
-        end_pos = self.get_end_pos(x_min, scale, y_min,
-            end_y_divider, end_y_offset)
-        if self.end.zone == 'priority':
-            pygame.draw.line(
-                screen, pygame.Color("green"),
-                start_pos, end_pos, 10 if self.active else 1)
-        elif self.end.zone == 'normal':
-            pygame.draw.line(
-                screen, pygame.Color("yellow"), start_pos, end_pos,
-                10 if self.active else 1)
-        elif self.end.zone == 'restricted':
-            pygame.draw.line(
-                screen, pygame.Color("orange"), start_pos, end_pos,
-                10 if self.active else 1)
-        elif self.end.zone == 'blocked':
-            pygame.draw.line(
-                screen, pygame.Color("red"), start_pos, end_pos,
-                10 if self.active else 1)
 
     def __str__(self) -> str:
         """__str__ function."""

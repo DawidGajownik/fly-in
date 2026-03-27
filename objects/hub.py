@@ -1,6 +1,5 @@
-from typing import List, Any, Union
+from typing import Any, Union, Callable
 import pygame
-from objects.utils import Utils
 
 
 class Hub:
@@ -10,7 +9,6 @@ class Hub:
             self, hub_type: str, name: str, x: str, y: str,
             extras: Union[str, None]):
         """__init__ function. Brief description."""
-        self.utils = Utils()
         self.name = name
         self.hub_type = hub_type[:-1]
         self.x = int(x)
@@ -19,16 +17,16 @@ class Hub:
         self.max_drones = 1
         self.zone = 'normal'
         self.process_extras(extras) if extras else None
-        self.block: Any = None
         self.drones_amount = 0
-        self.connections: List[Any] = []
+        self.connections: list = []
+        self.block: Any = None
 
     def draw(
             self, screen: Any, size: int,
-            x: int, y: int) -> None:
+            x: int, y: int, choose_hub_color: Callable) -> None:
         """Function drawing single hub."""
         zone = self.zone
-        color = self.utils.choose_hub_color(zone)
+        color = choose_hub_color(zone)
         try:
             pygame.draw.rect(  # out border
                 screen, pygame.Color("black"),
