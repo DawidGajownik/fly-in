@@ -1,7 +1,9 @@
+import pygame
+
 from .hub import Hub
 from .connection import Connection
 from random import randint
-from typing import Union, List
+from typing import Union, List, Any, Callable
 
 
 class Drone:
@@ -21,6 +23,21 @@ class Drone:
         self.prev_y: Union[int, None] = None
         self.moved = False
         self.moves = 0
+
+    def draw(
+            self, the_colors: dict, frame: int, win: Any, font: int,
+            choose_color: Callable, show_text: Callable,
+            compute_weighted_position: Callable) -> None:
+        """Method drawing single drone"""
+        brightness = sum(the_colors[self.color][:3])
+        x, y = compute_weighted_position(
+            (self.x, self.y),
+            (self.prev_x, self.prev_y),
+            frame, win.fps)
+        pygame.draw.circle(win.screen, self.color, (x, y), win.radius - 2)
+        show_text(
+            win, font, str(self.idx),
+            choose_color(brightness), x, y)
 
     def move(self) -> bool:
         """

@@ -25,6 +25,7 @@ class Connection:
     def draw(
             self, win: Any, get_start_pos: Callable,
             get_end_pos: Callable) -> None:
+        """method to draw the connection."""
         start_hubs = self.start.block.hubs
         end_hubs = self.end.block.hubs
         start_idx = start_hubs.index(self.start)
@@ -57,6 +58,10 @@ class Connection:
                 10 if self.active else 1)
 
     def draw_stops(self, win: Any) -> None:
+        """
+        Method to draw the place for drone on connection
+        when it goes to restricted hub.
+        """
         start_hubs = self.start.block.hubs
         end_hubs = self.end.block.hubs
         start_y_divider = 2 * len(start_hubs)

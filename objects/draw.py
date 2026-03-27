@@ -102,15 +102,10 @@ class Draw:
         if frame > win.fps:
             frame = win.fps
         for drone in drones:
-            brightness = sum(the_colors[drone.color][:3])
-            x, y = self.utils.compute_weighted_position(
-                (drone.x, drone.y),
-                (drone.prev_x, drone.prev_y),
-                frame, win.fps)
-            pygame.draw.circle(win.screen, drone.color, (x, y), win.radius - 2)
-            self.show_text(
-                win, font, str(drone.idx),
-                self.utils.choose_color(brightness), x, y)
+            drone.draw(
+                the_colors, frame, win, font,
+                self.utils.choose_color, self.show_text,
+                self.utils.compute_weighted_position)
 
     def draw_grid(self, win: Window) -> None:
         """Drawing grid"""
